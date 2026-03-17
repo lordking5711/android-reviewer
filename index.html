@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Android Dev Wayground - Satoshi Edition</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,900,400&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; display: flex; height: 100vh; 
+            font-family: 'Satoshi', sans-serif; background: #0b0f1a; color: #f8fafc; overflow: hidden;
+        }
+        
+        /* Editor/Console Side */
+        .editor { width: 30%; border-right: 1px solid #2d3748; display: flex; flex-direction: column; background: #111827;}
+        .tab { background: #1f2937; padding: 12px 24px; color: #3ddc84; font-size: 11px; font-weight: 700; border-bottom: 2px solid #3ddc84; width: fit-content; text-transform: uppercase; letter-spacing: 1px;}
+        .code-area { flex-grow: 1; padding: 25px; font-family: 'Fira Code', monospace; font-size: 12px; line-height: 1.6; overflow-y: auto; color: #94a3b8; }
+        .keyword { color: #818cf8; }
+        .progress-log { color: #3ddc84; margin-top: 20px; border-top: 1px solid #1f2937; padding-top: 15px; font-style: italic; opacity: 0.8; }
+
+        /* Playground Side */
+        .preview { width: 70%; background: radial-gradient(circle at top right, #1e293b, #0f172a); display: flex; flex-direction: column; }
+        .browser-bar { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); padding: 12px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #1f2937; }
+        .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }
+        .address-bar { background: #1f2937; flex-grow: 1; border-radius: 6px; padding: 6px 16px; color: #94a3b8; font-size: 11px; font-weight: 500;}
+
+        .app-space { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .quiz-card { 
+            background: #1e293b; padding: 48px; border-radius: 24px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            max-width: 600px; width: 100%; position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Animations */
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .animate-shake { animation: shake 0.4s; }
+        .animate-bounce { animation: bounce 0.4s; }
+        .slide-in { animation: slideIn 0.6s ease-out; }
+
+        .progress-bar { 
+            position: absolute; top: 0; left: 0; height: 6px; background: linear-gradient(90deg, #3ddc84, #00ff87); 
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 24px 24px 0 0; 
+        }
+        .q-header { font-size: 13px; color: #64748b; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;}
+        .q-text { font-size: 22px; font-weight: 700; color: white; margin-bottom: 32px; line-height: 1.3; letter-spacing: -0.02em;}
+        
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn { 
+            background: #334155; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.05); 
+            padding: 18px 24px; border-radius: 14px; cursor: pointer; text-align: left;
+            font-size: 16px; font-weight: 500; transition: all 0.3s ease;
+            font-family: 'Satoshi', sans-serif;
+        }
+        .opt-btn:hover:not(:disabled) { background: #475569; transform: translateY(-2px); border-color: #3ddc84; color: white; }
+        
+        .correct { background: #10b981 !important; border-color: #34d399 !important; color: white; font-weight: 700; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        .wrong { background: #ef4444 !important; border-color: #f87171 !important; color: white; font-weight: 700; box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+
+        #score-badge { position: absolute; top: 24px; right: 24px; background: rgba(61, 220, 132, 0.1); color: #3ddc84; padding: 6px 14px; border-radius: 10px; font-weight: 900; font-size: 14px; border: 1px solid rgba(61, 220, 132, 0.2); }
+    </style>
+</head>
+<body>
+
+    <div class="editor">
+        <div class="tab">Main.java</div>
+        <div class="code-area">
+            <span class="keyword">package</span> com.satoshi.quiz;<br><br>
+            <span class="keyword">@Interface</span><br>
+            <span class="keyword">public class</span> QuizEngine {<br>
+            &nbsp;&nbsp;<span style="color: #64748b">// Shuffling 40 Items...</span><br>
+            &nbsp;&nbsp;<span class="keyword">private int</span> score = 0;<br>
+            <div class="progress-log" id="runtime-log">// System ready.</div>
+        </div>
+    </div>
+
+    <div class="preview">
+        <div class="browser-bar">
+            <span class="dot" style="background:#ff5f56"></span>
+            <span class="dot" style="background:#ffbd2e"></span>
+            <span class="dot" style="background:#27c93f"></span>
+            <div class="address-bar">https://wayground.satoshi/android-dev</div>
+        </div>
+        
+        <div class="app-space">
+            <div class="quiz-card" id="quiz-card">
+                <div class="progress-bar" id="p-bar" style="width: 0%"></div>
+                <div id="score-badge">SCORE: 0</div>
+                <div id="quiz-ui" class="slide-in">
+                    <div class="q-header" id="q-count">QUESTION 1 / 40</div>
+                    <div class="q-text" id="q-text">Loading...</div>
+                    <div class="options-grid" id="opt-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const rawData = [
+    { q: "Which mobile operating system is created by Google and is open source?", o: ["iOS", "Android", "Blackberry", "Windows Phone"], c: 1 },
+    { q: "Which key benefit allows users to access info anytime, often without internet?", o: ["Interactivity", "Personalization", "Convenience", "Productivity"], c: 2 },
+    { q: "Which official IDE is used for Android development?", o: ["Xcode", "Visual Studio", "Android Studio", "Eclipse"], c: 2 },
+    { q: "Design factor requiring minimizing manual data entry?", o: ["Screen Size", "User Interaction", "Screen Density", "Resolution"], c: 1 },
+    { q: "The 'face' of a program encompassing everything a user sees?", o: ["Layout", "User Interface", "View Group Object", "Input Control"], c: 1 },
+    { q: "Small window prompting for a decision without filling the screen?", o: ["Notification", "Dialog", "Toast", "App Bar"], c: 1 },
+    { q: "Layout aligning all children in a single direction?", o: ["Relative Layout", "Linear Layout", "List View", "Grid View"], c: 1 },
+    { q: "Input control for selecting one option from a mutually exclusive set?", o: ["Checkboxes", "Radio Buttons", "Toggle Buttons", "Spinners"], c: 1 },
+    { q: "Lifecycle state: activity in foreground and has user focus?", o: ["Paused", "Stopped", "Running/Resumed", "Destroyed"], c: 2 },
+    { q: "Callback called when activity is created, global state is set up?", o: ["onStart()", "onResume()", "onCreate()", "onPause()"], c: 2 },
+    { q: "For fragments, which callback is called when UI is first drawn?", o: ["onCreate()", "onPause()", "onCreateView()", "onDestroy()"], c: 2 },
+    { q: "Android apps are written using which primary programming language?", o: ["Swift", "Java", "C++", "Python"], c: 1 },
+    { q: "File containing all contents of an Android app for install?", o: ["Manifest", "APK", "AVD", "Module"], c: 1 },
+    { q: "Component running in background for long operations without UI?", o: ["Activity", "Service", "Content Provider", "Broadcast Receiver"], c: 1 },
+    { q: "Asynchronous message that activates activities or services?", o: ["Manifest", "Intent", "Callback", "Fragment"], c: 1 },
+    { q: "Phase involving configuring and building the app for release?", o: ["Development", "Setup", "Publishing", "Debugging"], c: 2 },
+    { q: "Tool allowing connection to virtual or real devices?", o: ["Gradle", "ADB", "Android Studio", "AVD Manager"], c: 1 },
+    { q: "Component defining hardware features of the virtual device?", o: ["System image", "Dedicated storage", "Hardware profile", "Emulator skin"], c: 2 },
+    { q: "Times you tap 'Build Number' to enable developer options?", o: ["3", "5", "7", "10"], c: 2 },
+    { q: "Project module containing code to test your application?", o: ["App Module", "Library Module", "Test Modules", "App Engine Module"], c: 2 },
+    { q: "Mobile OS developed by Apple, originally iPhone OS?", o: ["Android", "iOS", "Windows", "Blackberry"], c: 1 },
+    { q: "Benefit of mobile apps eliminating loading over slow internet?", o: ["Productivity", "Speed", "Interactivity", "Personalization"], c: 1 },
+    { q: "IDE for iOS that uses Swift and Objective-C?", o: ["Android Studio", "Eclipse", "Xcode", "Visual Studio"], c: 2 },
+    { q: "Factor involving code optimization to avoid battery drain?", o: ["Resource Management", "User Interaction", "Screen Size", "Screen Density"], c: 0 },
+    { q: "View object in UI that draws something user interacts with?", o: ["Layout", "Widget/View Object", "View Group", "Dialog"], c: 1 },
+    { q: "Small pop-up providing simple feedback (no interaction)?", o: ["Dialog", "Toast", "Notification", "App Bar"], c: 1 },
+    { q: "Layout that positions children relative to each other/parent?", o: ["Linear Layout", "Relative Layout", "Grid View", "List View"], c: 1 },
+    { q: "Input control providing a quick way to choose a value from a set?", o: ["Spinner", "Radio Button", "Checkbox", "Toggle"], c: 0 },
+    { q: "Callback called when activity is no longer visible to user?", o: ["onPause()", "onStop()", "onDestroy()", "onRestart()"], c: 1 },
+    { q: "Represents a portion or behavior of a UI in an activity?", o: ["Intent", "Fragment", "Service", "Manifest"], c: 1 },
+    { q: "Android system manages each app as a different what?", o: ["User", "Service", "File", "Module"], c: 0 },
+    { q: "Component managing shared set of app data (SQL/Files)?", o: ["Service", "Content Provider", "Activity", "Manifest"], c: 1 },
+    { q: "XML file detailing components that exist in an Android app?", o: ["build.gradle", "Manifest file", "R.java", "strings.xml"], c: 1 },
+    { q: "Managed runtime used by Android apps and system services?", o: ["Dalvik", "ART (Android Runtime)", "JVM", "Native"], c: 1 },
+    { q: "Tool that creates and manages AVDs (virtual devices)?", o: ["SDK Manager", "AVD Manager", "ADB", "Gradle"], c: 1 },
+    { q: "Developer option showing CPU usage on device screen?", o: ["Show layout bounds", "Show CPU usage", "Profile GPU", "Debug GPU"], c: 1 },
+    { q: "First level of containment within an Android project?", o: ["Module", "Package", "Manifest", "Library"], c: 0 },
+    { q: "Module that holds shared Android sources and resources?", o: ["Android App Module", "Library Module", "Test Module", "Java Library"], c: 1 },
+    { q: "Phase involving setup, IDE, AVD, and hardware connection?", o: ["Development", "Setup", "Publishing", "Testing"], c: 1 },
+    { q: "Advanced build toolkit managing dependencies and build logic?", o: ["ADB", "AVD", "Gradle", "Manifest"], c: 2 }
+];
+
+let quizData = [...rawData].sort(() => Math.random() - 0.5);
+let currentIdx = 0;
+let score = 0;
+
+// SFX Engine
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(freq, type) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.3);
+}
+
+function render() {
+    if(currentIdx >= quizData.length) {
+        showFinal();
+        return;
+    }
+
+    const item = quizData[currentIdx];
+    const ui = document.getElementById('quiz-ui');
+    ui.classList.remove('slide-in');
+    void ui.offsetWidth;
+    ui.classList.add('slide-in');
+
+    document.getElementById('q-count').innerText = `QUESTION ${currentIdx + 1} / 40`;
+    document.getElementById('q-text').innerText = item.q;
+    document.getElementById('p-bar').style.width = `${((currentIdx) / 40) * 100}%`;
+    document.getElementById('score-badge').innerText = `SCORE: ${score}`;
+    
+    const container = document.getElementById('opt-container');
+    container.innerHTML = '';
+
+    item.o.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.innerText = opt;
+        btn.onclick = () => select(i, btn);
+        container.appendChild(btn);
+    });
+
+    updateCodeLog(`// Injecting Q${currentIdx + 1}\n// Status: Active`);
+}
+
+function select(idx, btn) {
+    const item = quizData[currentIdx];
+    const card = document.getElementById('quiz-card');
+    const buttons = document.querySelectorAll('.opt-btn');
+    buttons.forEach(b => b.disabled = true);
+
+    if(idx === item.c) {
+        score++;
+        btn.classList.add('correct');
+        card.classList.add('animate-bounce');
+        playSound(900, 'sine');
+        updateCodeLog(`// RESULT: OK (score: ${score})`);
+    } else {
+        btn.classList.add('wrong');
+        buttons[item.c].classList.add('correct');
+        card.classList.add('animate-shake');
+        playSound(150, 'triangle');
+        updateCodeLog(`// RESULT: MISMATCH\n// expected_idx: ${item.c}`);
+    }
+
+    setTimeout(() => {
+        card.classList.remove('animate-bounce', 'animate-shake');
+        currentIdx++;
+        render();
+    }, 1200);
+}
+
+function showFinal() {
+    document.getElementById('quiz-ui').innerHTML = `
+        <div style="text-align: center;">
+            <h2 style="font-weight:900; letter-spacing:-0.05em; font-size:32px;">SESSION COMPLETE</h2>
+            <div style="font-size: 80px; font-weight:900; color:#3ddc84; margin: 20px 0;">${score}/40</div>
+            <button class="opt-btn" style="width:100%; text-align:center; background:#3ddc84; color:#000; font-weight:900;" onclick="location.reload()">RESTART CHALLENGE</button>
+        </div>
+    `;
+    updateCodeLog(`// END OF DATA STREAM.\n// final_score: ${score}`);
+}
+
+function updateCodeLog(msg) {
+    document.getElementById('runtime-log').innerText = msg;
+}
+
+render();
+</script>
+</body>
+</html>
